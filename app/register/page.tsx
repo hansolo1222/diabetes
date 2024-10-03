@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import GoogleButton from 'react-google-button';
-import { signIn } from "next-auth/react";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { registerUser } from "@/lib/actions/register";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -29,24 +30,19 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      const result = await registerUser(email, password);
       
-      if (response.ok) {
-        router.push('/login');
+      if (result.error) {
+        setError(result.error);
       } else {
-        const data = await response.json();
-        console.error('Registration failed:', data.error);
-        // Handle registration error (e.g., show error message to user)
+        router.push('/login');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      // Handle error (e.g., show error message to user)
+      setError('An unexpected error occurred');
     }
   };
 
@@ -59,6 +55,7 @@ export default function Register() {
       <div className="w-full max-w-md">
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
           <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
+          {error && <p className="text-red-500 text-xs italic mb-4">{error}</p>}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
               Email
