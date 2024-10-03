@@ -5,7 +5,8 @@ import React, { useState } from 'react';
 import { CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 interface CheckoutProps {
-  onSuccess: () => void;
+  onSuccess: (paymentIntentId: string) => void;
+
   options: {
     style: {
       base: {

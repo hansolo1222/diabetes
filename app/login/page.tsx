@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from 'next/image';
 import GoogleButton from 'react-google-button';
 import styled from 'styled-components';
+import { Session } from "next-auth";
 
 // Create a styled component for the email display
 const StyledEmail = styled.span`
@@ -20,7 +21,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession() as { data: Session | null, status: "loading" | "authenticated" | "unauthenticated" };
+
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -79,7 +81,7 @@ export default function Login() {
             <h2 className="text-2xl font-bold mb-6 text-center">Quick Diabetes Recommendation</h2>
             <p className="text-center mb-4">
               Logged in as: 
-              <StyledEmail>{session.user?.email}</StyledEmail>
+              {/* <StyledEmail>{session?.user?.email}</StyledEmail> */}
             </p>
           </div>
           <button
