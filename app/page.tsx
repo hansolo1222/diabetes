@@ -9,6 +9,7 @@ import StripeWrapper from '../components/StripeWrapper';
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
+import { updatePaymentStatus } from "@/lib/actions/updatePaymentStatus";
 
 
 type FoodTranslations = {
@@ -83,8 +84,12 @@ export default function Home() {
   // After successful payment
   const handlePaymentSuccess = useCallback(async () => {
     try {
-      await fetch('/api/update-payment-status', { method: 'POST' });
-      setHasPaid(true);
+      const result = await updatePaymentStatus(session?.user?.email as string);
+      if (result.success) {
+        setHasPaid(true);
+      } else {
+        console.error('Failed to update payment status:', result.error);
+      }
     } catch (error) {
       console.error('Error updating payment status:', error);
     }
